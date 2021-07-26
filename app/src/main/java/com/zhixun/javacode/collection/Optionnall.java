@@ -1,4 +1,4 @@
-package com.zhixun.javacode.stream;
+package com.zhixun.javacode.collection;
 
 import java.util.Optional;
 import java.util.function.Consumer;
