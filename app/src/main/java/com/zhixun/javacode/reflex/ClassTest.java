@@ -2,6 +2,7 @@ package com.zhixun.javacode.reflex;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Random;
@@ -92,6 +93,9 @@ public class ClassTest {
         //运行时使用反射，得到字段值
         try {
             Field field = T2.class.getDeclaredField("name");
+            if (!field.isAccessible()) {
+                System.out.println("该字段是私有不可访问");
+            }
             if (Modifier.toString(field.getModifiers()).contains("private")) {
                 System.out.println("该字段是私有的无法获取");
             } else {
@@ -105,7 +109,27 @@ public class ClassTest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-
+//---------------------------------------------------------3.反射调用任意方法-----------------------------------------------------------
+        try {
+            Method method = T3.class.getDeclaredMethod("add", int.class, int.class);//因为方法有重载为了避免，写明参数s
+            if (!method.isAccessible()) {
+                method.setAccessible(true);
+            }
+            int sum = (int) method.invoke(new T3(), 4, 5);
+            System.out.println("反射调用方法得到 sum = " + sum);
+            Method method1 = T3.class.getDeclaredMethod("sum");//因为方法有重载为了避免，写明参数s
+            if (!method1.isAccessible()) {
+                method1.setAccessible(true);
+            }
+            sum = (int) method1.invoke(null);//method1.invoke(null)如果是静态方法第一个参数是null
+            System.out.println(" sum = " + sum);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class T1 {
@@ -151,6 +175,18 @@ public class ClassTest {
     public static class T3 {
         static {
             System.out.println("创建T3");
+        }
+
+        private int add(int a, int b) {
+            return a + b;
+        }
+
+        private int add() {
+            return 5;
+        }
+
+        static int sum() {
+            return 5;
         }
     }
 
