@@ -32,17 +32,17 @@ public class Test1 {
 
 		System.out.println(m.find());
 
-		new Thread("�߳� A") {
+		new Thread("线程 A") {
 			public void run() {
 				super.run();
 				synchronized ("123") {
-					System.out.println("123����waitִ��ǰ" + getName());
+					System.out.println("123对象wait执行前" + getName());
 					try {
-						"123".wait();// wait�����ͷ�ͬ������������һ�߳̿��Լ���ִ�� waitִ��ǰ
+						"123".wait();// wait方法释放同步锁，所以下一线程可以继续执行 wait执行前
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					System.out.println("123����waitִ�к�" + getName());
+					System.out.println("123对象wait执行后" + getName());
 				}
 			};
 		}.start();
@@ -53,13 +53,13 @@ public class Test1 {
 			e.printStackTrace();
 		}
 		synchronized ("123") {
-			"123".notify();// wait�����ͷ�ͬ������������һ�߳̿��Լ���ִ�� waitִ��ǰ
-			System.out.println("�ͷ���");
+			"123".notify();// wait方法释放同步锁，所以下一线程可以继续执行 wait执行前
+			System.out.println("释放锁");
 		}
 		new Thread() {
 			public void run() {
 				super.run();
-				System.out.println("�������߳�");
+				System.out.println("开启新线程");
 			}
 		}.start();
 

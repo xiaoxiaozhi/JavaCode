@@ -37,8 +37,8 @@ public class Other {
 				}
 			}
 		}
-		System.out.println("��ֵ��С������ʱ��" + k0 / 60 + ":" + k0 % 60 + " " + k1 / 60 + ":" + k1 % 60);
-		System.out.println("�õ���ֵ��" + change(365));
+		System.out.println("差值最小的两个时间" + k0 / 60 + ":" + k0 % 60 + " " + k1 / 60 + ":" + k1 % 60);
+		System.out.println("得到的值：" + change(365));
 	}
 
 	public static void test() {
@@ -47,8 +47,8 @@ public class Other {
 	}
 
 	public static int change(int num) {
-		System.out.println("������������" + num);
-		String str = String.valueOf(num);// numΪ��Ҫת��������
+		System.out.println("传进来的数：" + num);
+		String str = String.valueOf(num);// num为需要转化的整数
 		if (str.length() == 1) {
 			return num;
 		}
@@ -63,7 +63,7 @@ public class Other {
 				if (max < tmp[i + 1]) {
 					max = tmp[i + 1];
 					index = i + 1;
-					System.out.println("���" + max + " ����" + index);
+					System.out.println("最大" + max + " 索引" + index);
 				}
 			}
 		}
