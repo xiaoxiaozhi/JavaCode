@@ -13,16 +13,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
@@ -46,7 +50,8 @@ public class Io {
 
     public static void main(String... args) {
 //        inout();
-        operatePath();
+//        operatePath();
+        operateFile();
     }
 
     /**
@@ -113,15 +118,6 @@ public class Io {
         //等同于
         new BufferedWriter(new OutputStreamWriter(new FileOutputStream("123.txt"), StandardCharsets.UTF_8));
         printWriter.print("123");
-
-        //3.从文件读入文本
-        try {
-            byte[] bytes = Files.readAllBytes(new File("").toPath());//把整个文件读入内存，如果是大文件会造成内存溢出
-            List<String> lists = Files.readAllLines(new File("").toPath());//一行行读入，实际上每一行BufferReader.readLine()
-            Stream<String> streams = Files.lines(new File("").toPath(), StandardCharsets.UTF_8);//如果每一行太大，那么将行转换成独行对象Stream<String>,返回的是java8的流
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -150,25 +146,68 @@ public class Io {
     }
 
     /**
-     * 操作文件
+     * 操作路径
      */
     private static void operatePath() {
         //Path 和 Files 是java7添加进来的
         //Path 是一个抽象路径，不必对着某个实际存在的文件
-        System.getProperty("user.dir");//java 项目绝对路径
-        Path path = Paths.get("home", "456.data");
-//        Files.createFile(path);
-        try (Scanner scanner = new Scanner(System.in); BufferedWriter bw = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+        String absolutle = System.getProperty("user.dir");//java 项目绝对路径
+        Path workPath = Paths.get(absolutle);
+        System.out.println("生成一个路径 = " + workPath);
+        workPath.resolve("any");//如果 any是绝对路径 则返回 any代表的绝对路径，否则在workPath后面跟着any
+        System.out.println("产生兄弟路径resolveSibling = " + workPath.resolveSibling("any"));
+        workPath.normalize();//移除冗余路径例如 /home/../at/.q  到 /home/at/q
+        System.out.println("返回根路径getRoot = " + workPath.getRoot());
 
-            String str;
-            while ((str = scanner.nextLine()).equals("exit")) {
-                bw.write(str);
+//        Path path = Paths.get("home", "456.data");
+//        try (Scanner scanner = new Scanner(System.in); BufferedWriter bw = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+//
+//            String str;
+//            while ((str = scanner.nextLine()).equals("exit")) {
+//                bw.write(str);
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(path.toAbsolutePath());
+    }
+
+    /**
+     * Files 类操作文件
+     */
+    static void operateFile() {
+        //3.从文件读入文本
+        try {
+            byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir"), "build.gradle"));//把整个文件读入内存，如果是大文件会造成内存溢出
+            List<String> lists = Files.readAllLines(Paths.get(System.getProperty("user.dir"), "build.gradle"));//一行行读入，实际上每一行BufferReader.readLine()
+            Stream<String> streams = Files.lines(Paths.get(System.getProperty("user.dir"), "build.gradle"), StandardCharsets.UTF_8);//如果每一行太大，那么将行转换成独行对象Stream<String>,返回的是java8的流
+            Path outFile = Paths.get(System.getProperty("user.dir"), "operateFile.txt");
+            if (!Files.isWritable(outFile)) {
+                Files.createFile(outFile);//根据Path创建一个文件
             }
-
+            Files.write(outFile, "8月3天气晴".getBytes());//由于下面打开 关闭输出流的操作
+            Files.write(outFile, "8月4天气晴".getBytes(Charset.forName("UTF-8")), StandardOpenOption.APPEND);//续文件
+            //以上方法适用于处理中小型文件，想要处理大文件或者二进制文件还是需要输入输出流,Files 创建输入输出流
+            OutputStream outputStream = Files.newOutputStream(outFile);
+            Files.newInputStream(outFile);
+            Files.newBufferedReader(outFile);
+            BufferedWriter bufferedWriter = Files.newBufferedWriter(outFile);
+            Files.createDirectories(Paths.get(System.getProperty("user.dir"), "dir"));//根据path创建一个目录
+            outputStream.close();
+            bufferedWriter.close();
+            //Files.copy(srcPath,desPath);//如果目标路径存在，赋值或移动将会失败
+//          Files.move(srcPath,desPath);
+//            Files.copy(srcPath,desPath,StandardCopyOption.REPLACE_EXISTING,StandardCopyOption.COPY_ATTRIBUTES);//覆盖原有文件
+//            Files.move(srcPath,desPath, StandardCopyOption.ATOMIC_MOVE);//移动覆盖原有文件
+//            Files.copy(path,outPutStream);将path复制到输出流
+//            Files.copy(inputStream,path)//将输入流复制到path
+//            Files.delete(outFile);//删除文件，如果不存在会抛出异常，使用下面的删除方法;
+//            Files.deleteIfExists(outFile);
+            Files.size(outFile);//获取文件大小
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(path.toAbsolutePath());
     }
 
 }
