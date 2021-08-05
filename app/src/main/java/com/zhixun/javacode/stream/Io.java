@@ -19,6 +19,10 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
@@ -30,6 +34,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
+import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -51,7 +56,8 @@ public class Io {
     public static void main(String... args) {
 //        inout();
 //        operatePath();
-        operateFile();
+//        operateFile();
+        memoryMap();
     }
 
     /**
@@ -208,6 +214,54 @@ public class Io {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 内存映射
+     */
+    static void memoryMap() {
+        Path path = Paths.get("121759.mp4");
+        try {
+            //从文件中获取一个通道
+            FileChannel fileChannel = FileChannel.open(path);
+            //获取一个byteBuffer缓冲区，fileChannel.map 可以指定缓冲区读写方式
+            ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, 256);//获取
+            //顺序读缓冲区
+            while (byteBuffer.hasRemaining()) {
+                byteBuffer.get();
+            }
+            //随机读缓冲区
+            for (int i = 0; i < byteBuffer.limit(); i++) {
+                byteBuffer.get(i);
+            }
+            //java 默认字节高位在前，如果要处理低位在前的二进制也可以
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+            //查看缓冲区当前的字节序列,true 高位再前
+            byteBuffer.order();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * crc校验文件,获取校验和 演示 内存映射操作文件速度
+     */
+    static long crcFile() {
+        Path path = Paths.get("build.gradle");
+        CRC32 crc32 = new CRC32();
+        //内部通过管道 读取文件
+        try (InputStream fileInputStream = Files.newInputStream(path)) {
+            int read;
+            while ((read = fileInputStream.read()) > 0) {
+                crc32.update(read);
+            }
+            return crc32.getValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
 }
