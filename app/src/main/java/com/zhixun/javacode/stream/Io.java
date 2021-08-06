@@ -192,7 +192,7 @@ public class Io {
             if (!Files.isWritable(outFile)) {
                 Files.createFile(outFile);//根据Path创建一个文件
             }
-            Files.write(outFile, "8月3天气晴".getBytes());//由于下面打开 关闭输出流的操作
+            Files.write(outFile, "8月3天气晴".getBytes());//由于下面打开 关闭输出流的操作,这里没写进去，原因有待探究
             Files.write(outFile, "8月4天气晴".getBytes(Charset.forName("UTF-8")), StandardOpenOption.APPEND);//续文件
             //以上方法适用于处理中小型文件，想要处理大文件或者二进制文件还是需要输入输出流,Files 创建输入输出流
             OutputStream outputStream = Files.newOutputStream(outFile);
