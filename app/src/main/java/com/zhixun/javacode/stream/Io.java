@@ -22,11 +22,13 @@ import java.io.UnsupportedEncodingException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -58,6 +60,7 @@ public class Io {
 //        operatePath();
 //        operateFile();
         memoryMap();
+        show(Paths.get("121759.mp4"));
     }
 
     /**
@@ -221,11 +224,11 @@ public class Io {
      */
     static void memoryMap() {
         Path path = Paths.get("121759.mp4");
-        try {
-            //从文件中获取一个通道
-            FileChannel fileChannel = FileChannel.open(path);
-            //获取一个byteBuffer缓冲区，fileChannel.map 可以指定缓冲区读写方式
-            ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, 256);//获取
+        try (     //从文件中获取一个通道
+                  FileChannel fileChannel = FileChannel.open(path);) {
+
+            //获取一个byteBuffer缓冲区，fileChannel.map
+            ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());//获取
             //顺序读缓冲区
             while (byteBuffer.hasRemaining()) {
                 byteBuffer.get();
@@ -249,7 +252,7 @@ public class Io {
      * crc校验文件,获取校验和 演示 内存映射操作文件速度
      */
     static long crcFile() {
-        Path path = Paths.get("build.gradle");
+        Path path = Paths.get("121759.mp4");
         CRC32 crc32 = new CRC32();
         //内部通过管道 读取文件
         try (InputStream fileInputStream = Files.newInputStream(path)) {
@@ -264,4 +267,115 @@ public class Io {
         return -1;
     }
 
+    /**
+     * 检测不同流读取速度
+     *
+     * @param filePath
+     */
+    static long checksumInputStream(Path filePath) {
+        long current = System.currentTimeMillis();
+        CRC32 crc = new CRC32();
+        try (InputStream in = Files.newInputStream(filePath)) {
+            byte[] b = new byte[1024];
+            int num;
+            while ((num = in.read(b)) != -1) {
+                crc.update(b, 0, num);
+            }
+            System.out.println("普通流计算用时1 = " + (System.currentTimeMillis() - current));
+            return crc.getValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    /**
+     * 检测不同流读取速度
+     *
+     * @param filePath
+     */
+    static long checksumInputStream1(Path filePath) {
+        long current = System.currentTimeMillis();
+        CRC32 crc = new CRC32();
+        try (InputStream in = Files.newInputStream(filePath)) {
+            int num;
+            while ((num = in.read()) != -1) {
+                crc.update(num);
+            }
+            System.out.println("普通流计算用时2 = " + (System.currentTimeMillis() - current));
+            return crc.getValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    static long checksumBufferInputStream(Path path) {
+        long current = System.currentTimeMillis();
+        CRC32 crc = new CRC32();
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path))) {
+            byte[] b = new byte[1024];
+            int num;
+            while ((num = in.read(b)) != -1) {
+                crc.update(b, 0, num);
+            }
+            System.out.println("Buffer流计算用时 = " + (System.currentTimeMillis() - current));
+            return crc.getValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    /**
+     * @param path
+     * @return
+     */
+    static long checksumRandomAccessFile(Path path) {
+        long current = System.currentTimeMillis();
+        CRC32 crc = new CRC32();
+        try (RandomAccessFile file = new RandomAccessFile(path.toFile(), "r")) {
+            byte[] b = new byte[1024];
+            int num;
+            while ((num = file.read(b)) != -1) {
+                crc.update(b, 0, num);
+            }
+            System.out.println("随即访问文件计算用时 = " + (System.currentTimeMillis() - current));
+            return crc.getValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    static long checksumFileChannel(Path path) {
+        long current = System.currentTimeMillis();
+        CRC32 crc = new CRC32();
+        try (FileChannel fc = FileChannel.open(path)) {
+            ByteBuffer buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            while (buffer.hasRemaining()) {
+                buffer.
+                        crc.update(buffer.get());
+            }
+            System.out.println("管道流计算用时 = " + (System.currentTimeMillis() - current));
+            return crc.getValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    /**
+     * 1.每次读取1K字节比每次读取一个字节速度快上好几倍
+     * 2. 用缓冲区输入流BufferedInputStream 读取文件最快，
+     *
+     * @param path
+     */
+    static void show(Path path) {
+        checksumInputStream(path);
+        checksumInputStream1(path);
+        checksumBufferInputStream(path);
+        checksumRandomAccessFile(path);
+        checksumFileChannel(path);
+    }
 }
