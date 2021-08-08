@@ -59,7 +59,6 @@ public class Io {
 //        inout();
 //        operatePath();
 //        operateFile();
-        memoryMap();
         show(Paths.get("121759.mp4"));
     }
 
@@ -197,6 +196,7 @@ public class Io {
             }
             Files.write(outFile, "8月3天气晴".getBytes());//由于下面打开 关闭输出流的操作,这里没写进去，原因有待探究
             Files.write(outFile, "8月4天气晴".getBytes(Charset.forName("UTF-8")), StandardOpenOption.APPEND);//续文件
+
             //以上方法适用于处理中小型文件，想要处理大文件或者二进制文件还是需要输入输出流,Files 创建输入输出流
             OutputStream outputStream = Files.newOutputStream(outFile);
             Files.newInputStream(outFile);
@@ -219,34 +219,7 @@ public class Io {
         }
     }
 
-    /**
-     * 内存映射
-     */
-    static void memoryMap() {
-        Path path = Paths.get("121759.mp4");
-        try (     //从文件中获取一个通道
-                  FileChannel fileChannel = FileChannel.open(path);) {
 
-            //获取一个byteBuffer缓冲区，fileChannel.map
-            ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());//获取
-            //顺序读缓冲区
-            while (byteBuffer.hasRemaining()) {
-                byteBuffer.get();
-            }
-            //随机读缓冲区
-            for (int i = 0; i < byteBuffer.limit(); i++) {
-                byteBuffer.get(i);
-            }
-            //java 默认字节高位在前，如果要处理低位在前的二进制也可以
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
-            //查看缓冲区当前的字节序列,true 高位再前
-            byteBuffer.order();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * crc校验文件,获取校验和 演示 内存映射操作文件速度
@@ -351,13 +324,15 @@ public class Io {
     static long checksumFileChannel(Path path) {
         long current = System.currentTimeMillis();
         CRC32 crc = new CRC32();
+        byte[] byteArray = new byte[1024];
         try (FileChannel fc = FileChannel.open(path)) {
             ByteBuffer buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
             while (buffer.hasRemaining()) {
-                buffer.
-                        crc.update(buffer.get());
+                ByteBuffer temp = buffer.get(byteArray);
+                System.out.println(temp);
+                crc.update(temp);
             }
-            System.out.println("管道流计算用时 = " + (System.currentTimeMillis() - current));
+            System.out.println("内存映射计算用时 = " + (System.currentTimeMillis() - current));
             return crc.getValue();
         } catch (IOException e) {
             e.printStackTrace();
@@ -366,8 +341,8 @@ public class Io {
     }
 
     /**
-     * 1.每次读取1K字节比每次读取一个字节速度快上好几倍
-     * 2. 用缓冲区输入流BufferedInputStream 读取文件最快，
+     * 1.每次读取1K字节比每次读取一个字节速度快上几百倍
+     * 2.每次读1字节：内存映射最快、缓冲区输入流BufferedInputStream齐次，不过相差不大。不过内存映射适合大文件，日常使用推荐缓冲区流
      *
      * @param path
      */
