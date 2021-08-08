@@ -65,11 +65,11 @@ public class Nio {
 
         try (FileChannel fc1 = FileChannel.open(path, StandardOpenOption.WRITE);) {
             System.out.println(" " + fc1.tryLock());
-            ;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        // 使用结束记得调用 通道  和 锁
         try (FileChannel fc2 = FileChannel.open(path, StandardOpenOption.WRITE);
              FileLock fl2 = fc2.lock(0, fc2.size(), false);
         ) {
