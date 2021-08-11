@@ -28,11 +28,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
@@ -58,8 +60,8 @@ public class Io {
     public static void main(String... args) {
 //        inout();
 //        operatePath();
-//        operateFile();
-        show(Paths.get("121759.mp4"));
+        operateFile();
+//        show(Paths.get("121759.mp4"));
     }
 
     /**
@@ -190,9 +192,19 @@ public class Io {
             byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir"), "build.gradle"));//把整个文件读入内存，如果是大文件会造成内存溢出
             List<String> lists = Files.readAllLines(Paths.get(System.getProperty("user.dir"), "build.gradle"));//一行行读入，实际上每一行BufferReader.readLine()
             Stream<String> streams = Files.lines(Paths.get(System.getProperty("user.dir"), "build.gradle"), StandardCharsets.UTF_8);//如果每一行太大，那么将行转换成独行对象Stream<String>,返回的是java8的流
-            Path outFile = Paths.get(System.getProperty("user.dir"), "operateFile.txt");
-            if (!Files.isWritable(outFile)) {
-                Files.createFile(outFile);//根据Path创建一个文件
+            Path outFile = Paths.get(System.getProperty("user.dir"), "dir1", "dir2", "introduce.txt");
+            //对于还未创建的文件或文件夹Files.isRegularFile和isDirectory 区分不了，先创建文件的父目录，再创建文件
+            if (Files.isRegularFile(outFile)) {
+                System.out.println("是文件1");
+            }
+            if (!Files.exists(outFile.getParent())) {
+                Files.createDirectories(outFile.getParent());
+            }
+            if (!Files.exists(outFile)) {
+                Files.createFile(outFile);
+            }
+            if (Files.isRegularFile(outFile)) {
+                System.out.println("是文件2");
             }
             Files.write(outFile, "8月3天气晴".getBytes());//由于下面打开 关闭输出流的操作,这里没写进去，原因有待探究
             Files.write(outFile, "8月4天气晴".getBytes(Charset.forName("UTF-8")), StandardOpenOption.APPEND);//续文件
@@ -202,7 +214,13 @@ public class Io {
             Files.newInputStream(outFile);
             Files.newBufferedReader(outFile);
             BufferedWriter bufferedWriter = Files.newBufferedWriter(outFile);
-            Files.createDirectories(Paths.get(System.getProperty("user.dir"), "dir"));//根据path创建一个目录
+            if (Files.isDirectory(Paths.get(System.getProperty("user.dir"), "dir", "dirrr", "dirrrr"))) {
+                System.out.println("是目录1");
+            }
+            Files.createDirectories(Paths.get(System.getProperty("user.dir"), "dir", "dirrr", "dirrrr"));//根据path创建一个目录
+            if (Files.isDirectory(Paths.get(System.getProperty("user.dir"), "dir", "dirrr", "dirrrr"))) {
+                System.out.println("是目录2");
+            }
             outputStream.close();
             bufferedWriter.close();
             //Files.copy(srcPath,desPath);//如果目标路径存在，赋值或移动将会失败
@@ -213,12 +231,12 @@ public class Io {
 //            Files.copy(inputStream,path)//将输入流复制到path
 //            Files.delete(outFile);//删除文件，如果不存在会抛出异常，使用下面的删除方法;
 //            Files.deleteIfExists(outFile);
+//            Files.isSameFile("")//判断是否是同一个文件
             Files.size(outFile);//获取文件大小
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 
     /**
@@ -353,4 +371,26 @@ public class Io {
         checksumRandomAccessFile(path);
         checksumFileChannel(path);
     }
+
+    /**
+     * 创建多级目录下的文件，多级目录不一定存在
+     *
+     * @param filePath
+     * @return
+     */
+    public Path createFile(Path filePath) {
+        try {
+            if (!Files.exists(filePath.getParent())) {
+                Files.createDirectories(filePath.getParent());
+            }
+            if (!Files.exists(filePath)) {
+                Files.createFile(filePath);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return filePath;
+    }
+
 }

@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
  *
  */
 public class ActionListenerInstaller {
+
+
     public static void processAnnotation(Object obj) {
         Class cl = obj.getClass();
         for (Method method : cl.getDeclaredMethods()) {
