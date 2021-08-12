@@ -84,6 +84,8 @@ public class ClassTest {
         //----------------------------------------------2.反射-----------------------------------------------
 //        在 java.lang.reflect 包中有三个类 Field、 Method 和 Constructor 分别用于描述类的域、 方法和构造器
         System.out.println("----------------------------2.反射-------------------------------------------------");
+        printClass(T1.class);
+
         printConstructors(T1.class);
 
         printMethods(T1.class);
@@ -155,6 +157,10 @@ public class ClassTest {
         static {
             System.out.println("创建T1");
         }
+
+        public class Inner1 {
+
+        }
     }
 
     public static class T2 extends T1 {
@@ -169,6 +175,10 @@ public class ClassTest {
         }
 
         public T2() {
+        }
+
+        private class Inner2 {
+
         }
     }
 
@@ -188,6 +198,23 @@ public class ClassTest {
         static int sum() {
             return 5;
         }
+    }
+
+    /**
+     * 打印内部类
+     *
+     * @param cl
+     */
+    public static void printClass(Class cl) {
+        System.out.print("父类及其自身public修饰的内部类");
+        for (Class clazz : cl.getDeclaredClasses()) {
+            System.out.print(clazz.getClass().getName());//获取不到内部类的名字，有待探究
+        }
+        System.out.print("\n自身所有的的内部类");
+        for (Class clazz : cl.getClasses()) {
+            System.out.print(clazz.getClass().getName());//除去父类的
+        }
+        System.out.println("");
     }
 
     public static void printConstructors(Class cl) {
@@ -239,4 +266,5 @@ public class ClassTest {
 //            System.out.println(type.getName() + "\t" + name);
         }
     }
+
 }
