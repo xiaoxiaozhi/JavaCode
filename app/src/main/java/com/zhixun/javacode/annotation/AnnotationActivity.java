@@ -25,13 +25,12 @@ public class AnnotationActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
         text = findViewById(R.id.textView);
         ActionListenerInstaller.processAnnotation(this);
-        Path path = Paths.get("");
-        try {
-            Files.createFile(path);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Path path = Paths.get("");
+//        try {
+//            Files.createFile(path);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @ActionListenerFor(source = "button")

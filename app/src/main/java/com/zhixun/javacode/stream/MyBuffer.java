@@ -23,7 +23,6 @@ import java.nio.file.Paths;
  * 就表示当前ByteBuffer中已没有可读取的数据了
  * Position	位置，下一个要被读或写的元素的索引，每次读写缓冲区数据时都会改变改值，为下次读写作准备
  * Mark	标记，调用mark()来设置mark=position，再调用reset()可以让position恢复到标记的位置
- *
  */
 public class MyBuffer {
     public static void main(String[] arg) {
@@ -75,7 +74,7 @@ public class MyBuffer {
         System.out.println("mark()-----" + buffer.mark());
         System.out.println("reset()-----" + buffer.reset());
         //rewind()方法，使缓冲区 position = 0，mark重置为-1,相比reset
-        System.out.println("rewind()-----" + buffer.rewind());
+        System.out.println("rewind()-----" + buffer.rewind());//写之前 执行这个方法，buffer.clear()//读之前执行这个方法
 
         ByteBuffer buffer1 = ByteBuffer.allocate(10);
         for (int i = 0; i < 10; i++) {
@@ -86,11 +85,12 @@ public class MyBuffer {
         //compat() 其主要作用在于在读取模式下进行数据压缩，并且方便下一步继续写入数据。例如：10个字节，先读取3个字节 此时position =3；
         //这时候写入会从3开始，覆盖掉未读取的字节，这时候执行compat，缓冲区数组整体向左前移3个字节，position = 7；
         buffer1.get(new byte[3]);//读取3个字节position=3
-        System.out.println("compact()-----" + buffer1.compact());
-        //clear() position = 0;limit = capacity;mark = -1;  有点初始化的味道，但是并不影响底层byte数组的内容
-        System.out.println("clear()-----" + buffer1.clear() + " buffer1.get() = " + buffer1.get(1));
+        System.out.println("compact()-----" + buffer1.compact() + " hashcode = " + buffer1.hashCode());
+        //clear() position = 0;limit = capacity;mark = -1;  有点初始化的味道，但是并不影响底层byte数组的内容, 注意看hashCode，buffer每执行一次实例都不相同
+        System.out.println("clear()-----" + buffer1.clear() + " buffer1.get() = " + buffer1.get(1) + " hashcode = " + buffer1.hashCode());
         //get()和get(1);
-        System.out.println("get()-----" + buffer1.get() + " get(0) = " + buffer1.get(0));
+        System.out.println("get()-----" + buffer1.get() + " get(0) = " + buffer1.get(0) + " hashcode = " + buffer1.hashCode());
+        System.out.println("position(int)-----" + buffer1.position(0));//设置position的位置
     }
 
     /**
