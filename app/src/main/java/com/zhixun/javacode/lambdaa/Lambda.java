@@ -13,8 +13,11 @@ public class Lambda {
         //Comparator 大于0排前面
         System.out.println(Arrays.asList(planets));
         new Timer();
-        //3.方法引用
-        Arrays.sort(planets, String::compareTo);
+        //3.方法引用  分为三种 静态方法引用。
+        //例如Timer t = new Timer(1000, System.out::println)
+        Arrays.sort(planets, String::compareTo);//实例::方法   String::compareTo <=> (str1,str2)->str1.compareTo(str2)
+        System.out.println(Arrays.asList(planets));
+        //Math::power<=> Math.power(x,y) //两个参数的静态方法引用
         testInterface(() -> "123");
 
     }
