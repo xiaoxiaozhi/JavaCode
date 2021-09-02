@@ -29,6 +29,7 @@ public class Test3 {
                 }
             }
         });
+
 //        System.out.println(new byte[]{(byte) 0xff, (byte) 0xff});
 //        int num = 0x8181;
 //        byte[] temp = new byte[2];
@@ -62,7 +63,7 @@ public class Test3 {
 //        }
 //        System.out.println("bcd2---" + stringBuffer.toString());
         byte b = (byte) 0xFd;
-        System.out.println("0xFD" + (b&0x000000FF));
+        System.out.println("0xFD" + (b & 0x000000FF));
     }
 
     public static String hextoBcd(int hex) {
