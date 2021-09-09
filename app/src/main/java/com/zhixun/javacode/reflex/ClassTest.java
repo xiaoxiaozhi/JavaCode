@@ -70,11 +70,11 @@ public class ClassTest {
             // 根据打印结果可以看出，不管从Class.forname()还是new关键字创建实例对象 ，静态代码块只执行了一遍
             // 这是因为静态代码在对象实例化过程中只执行一遍并常驻与内存中。注意此时只是分配静态成员变量的存储空间，不包含实例成员变量
             // 再实例化多少次，Class对象也只有一个所以不会再执行静态代码
-            Class.forName("com.zhixun.javacode.reflex.ClassTest$T2");
+            Class.forName("com.zhixun.javacode.reflex.ClassTest$T2");//1. 获取Class对象的第一种形式
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        Class c = T1.class;
+        Class c = T1.class;//2.获取Class 对象的第二种形式
         c = T2.class;
         System.out.println(c.getName());
         Class<?> clazz = Integer.class;// Class 泛型化
@@ -84,13 +84,19 @@ public class ClassTest {
         //----------------------------------------------2.反射-----------------------------------------------
 //        在 java.lang.reflect 包中有三个类 Field、 Method 和 Constructor 分别用于描述类的域、 方法和构造器
         System.out.println("----------------------------2.反射-------------------------------------------------");
-        printClass(T1.class);
-
-        printConstructors(T1.class);
-
-        printMethods(T1.class);
-
-        printFields(T1.class);
+        try {
+            printClass(T1.class);
+            System.out.println("-----Constructors------");
+            printConstructors(T1.class);
+            System.out.println("-----Methods------");
+            printMethods(T1.class.newInstance());
+            System.out.println("-----Fields------");
+            printFields(T1.class.newInstance());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
 
         //运行时使用反射，得到字段值
         try {
@@ -237,32 +243,35 @@ public class ClassTest {
         }
     }
 
-    public static void printMethods(Class cl) {
+    public static void printMethods(Object obj) {
+        Class cl = obj.getClass();
         Method[] methods = cl.getDeclaredMethods();
         for (Method m : methods) {
             Class retType = m.getReturnType();
             String name = m.getName();
-
             String modifiers = Modifier.toString(m.getModifiers());
             System.out.print(modifiers + "\t" + retType.getSimpleName() + "\t" + name);
-
             Class[] paramTypes = m.getParameterTypes();
             for (int j = 0; j < paramTypes.length; j++) {
-                if (j == 0) System.out.print(" Parameter");
+                if (j == 0) System.out.print("(");
                 System.out.print("\t" + paramTypes[j].getName());
             }
-            System.out.println("\n");
+//            m.invoke(obj,)
+            System.out.println("");
         }
     }
 
 
-    public static void printFields(Class cl) {
+    public static void printFields(Object obj) throws IllegalAccessException {
+        Class cl = obj.getClass();
         Field[] fields = cl.getDeclaredFields();
         for (Field f : fields) {
             Class type = f.getType();
             String name = f.getName();
             String modifiers = Modifier.toString(f.getModifiers());//有几个修饰符就获取几个,如果没有不打印(默认protecd也不打印)
             System.out.println(modifiers + "\t" + type.getSimpleName() + "\t" + name);
+            System.out.println("field value = " + f.get(obj));//实例中该对象的值
+//            f.set(obj,value);//利用反射给该字段赋值
 //            System.out.println(type.getName() + "\t" + name);
         }
     }

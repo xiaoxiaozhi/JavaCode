@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)//元注解
 @Retention(RetentionPolicy.RUNTIME)//元注解
 public @interface ActionListenerFor {
-    String source();
+    //注解的参数：参数类型 + 参数名（很像方法实际并不是） default 给注解参数加默认参数
+    String source() default "";
 
+    String[] school() default {};
 }
