@@ -91,6 +91,7 @@ public class MyBuffer {
         //get()和get(1);
         System.out.println("get()-----" + buffer1.get() + " get(0) = " + buffer1.get(0) + " hashcode = " + buffer1.hashCode());
         System.out.println("position(int)-----" + buffer1.position(0));//设置position的位置
+        System.out.println("buffer.put(new byte[0])-----" + buffer1.put(new byte[0]) + " 添加 0字节数组position不偏移");//添加 new byte[0] 效果
     }
 
     /**
