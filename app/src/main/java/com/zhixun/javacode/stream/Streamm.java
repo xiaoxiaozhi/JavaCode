@@ -1,4 +1,4 @@
-package com.zhixun.javacode.collection;
+package com.zhixun.javacode.stream;
 
 import java.util.Arrays;
 import java.util.IntSummaryStatistics;

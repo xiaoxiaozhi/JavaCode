@@ -1,4 +1,4 @@
-package com.zhixun.javacode.stream;
+package com.zhixun.javacode.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

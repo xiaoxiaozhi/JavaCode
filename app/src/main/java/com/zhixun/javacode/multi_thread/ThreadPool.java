@@ -7,6 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * CompletableFuture https://zhuanlan.zhihu.com/p/63734729
  * 线程池
  */
 public class ThreadPool {

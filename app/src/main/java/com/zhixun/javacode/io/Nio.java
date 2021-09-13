@@ -1,4 +1,4 @@
-package com.zhixun.javacode.stream;
+package com.zhixun.javacode.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +8,6 @@ import java.nio.channels.FileLock;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.zip.CRC32;
 
 public class Nio {
     public static void main(String[] arg) {

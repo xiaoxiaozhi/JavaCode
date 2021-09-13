@@ -7,19 +7,27 @@ import java.util.TimerTask;
 //1.lambda表达式 (参数) -> 表达式 ，如果表达式不止一行 必须用{}  注意如果没有参数的时候必须使用空括号()->{表达式}
 public class Lambda {
     public static void main(String[] arg) {
+        testInterface(() -> "123");//lambda表达式
         String[] planets = new String[]{"Mercury", "Venus", "Earth", "Mars",
                 "Jupiter", "Saturn", "Uranus", "Neptune"};
         Arrays.sort(planets, (str1, str2) -> str1.charAt(0) - str2.charAt(0));//无需指定lambda的返回，由上下文推定
         //Comparator 大于0排前面
         System.out.println(Arrays.asList(planets));
         new Timer();
-        //3.方法引用  分为三种 静态方法引用。
-        //例如Timer t = new Timer(1000, System.out::println)
-        Arrays.sort(planets, String::compareTo);//实例::方法   String::compareTo <=> (str1,str2)->str1.compareTo(str2)
-        System.out.println(Arrays.asList(planets));
-        //Math::power<=> Math.power(x,y) //两个参数的静态方法引用
-        testInterface(() -> "123");
+        //3.方法引用
+        // 分为三种 静态方法引用。
+        testInterface(Lambda::getData);// 静态方法引用
+        Lambda lambda = new Lambda();
+        testInterface(lambda::getData1);//实例方法引用1
+        Arrays.sort(planets, String::compareTo);//实例方法引用2   String::compareTo <=> (str1,str2)->str1.compareTo(str2)
+    }
 
+    private String getData1() {
+        return "123";
+    }
+
+    private static String getData() {
+        return "123";
     }
 
     public static void testInterface(MyInterface myInterface) {
@@ -38,7 +46,8 @@ public class Lambda {
     }
 
     /**
-     * 2.函数式接口：①只有一个抽象方法的接口。
+     * 2.函数式接口：
+     * ①只有一个抽象方法的接口。
      * ②default方法某默认实现，不属于抽象方法
      * ③接口重新声明了Object的公共方法 例如Comparator内的boolean equals(Object obj);
      * Java SE 8 中，允许在接口中增加静态方法, 只是这有违于将接口作为抽象规范的初衷
