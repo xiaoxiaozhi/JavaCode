@@ -1,8 +1,7 @@
-package com.zhixun.javacode.lambdaa;
+package com.zhixun.javacode.stream;
 
 import java.util.Arrays;
 import java.util.Timer;
-import java.util.TimerTask;
 
 //1.lambda表达式 (参数) -> 表达式 ，如果表达式不止一行 必须用{}  注意如果没有参数的时候必须使用空括号()->{表达式}
 public class Lambda {
