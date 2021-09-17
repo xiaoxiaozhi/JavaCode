@@ -2,6 +2,8 @@ package com.zhixun.javacode.stream;
 
 import java.util.Arrays;
 import java.util.Timer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 //1.lambda表达式 (参数) -> 表达式 ，如果表达式不止一行 必须用{}  注意如果没有参数的时候必须使用空括号()->{表达式}
 public class Lambda {
@@ -18,7 +20,12 @@ public class Lambda {
         testInterface(Lambda::getData);// 静态方法引用
         Lambda lambda = new Lambda();
         testInterface(lambda::getData1);//实例方法引用1
-        Arrays.sort(planets, String::compareTo);//实例方法引用2   String::compareTo <=> (str1,str2)->str1.compareTo(str2)
+        Arrays.sort(planets, String::compareTo);//实例方法引用2 传入两个参数 第一个参数是调用者 第二个参数还是参数  String::compareTo <=> (str1,str2)->str1.compareTo(str2)
+        //3.1构造器引用
+        Supplier<String> sp = String::new;
+        //3.2数组引用 type[]::new
+        Function<Integer, String[]> fun = String[]::new;
+        System.out.println("数组引用---" + fun.apply(10).length);
     }
 
     private String getData1() {
