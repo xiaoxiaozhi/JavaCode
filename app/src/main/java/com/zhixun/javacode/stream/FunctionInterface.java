@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * java 四大核心函数式接口
  * Consumer<T>   消费类型接口： void accept(T t)  有输入没有输出
  * Supplier<T>   供给型接口：   T get()  无输入有输出
- * Function<T,R> 函数型接口：   R apply(T t)
+ * Function<T,R> 函数型接口：   R apply(T t) 映射
  * Predicate<T>  判断型接口：   boolean test(T t)
  */
 public class FunctionInterface {
