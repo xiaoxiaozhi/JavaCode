@@ -7,7 +7,7 @@ package com.zhixun.javacode.GenericParadigm;
  */
 public class ArrayAlg<E> {
     //1. 定义泛型方法  修饰符 <泛型列表> 返回类型 方法名
-    public < E> E getMiddle1(E... arg) {
+    public <E> E getMiddle1(E... arg) {
         return arg[arg.length / 2];
     }   //2. 泛型方法泛型独立于泛型类泛型（如果泛型类泛型标识是String，泛型方法可以使用Integer）
 
@@ -22,6 +22,21 @@ public class ArrayAlg<E> {
     }
 
 
+    //5. 类型限制 <T extends 类1 & 类2>
+    public <T extends Comparable> T min(T... a) {
+        if (a == null || a.length < 0) {
+            return null;
+        }
+        T smaller = a[0];
+        for (T t : a) {
+            if (t.compareTo(smaller) < 0) {
+                smaller = t;
+            }
+        }
+        return smaller;
+    }
 }
+
+
 
 
