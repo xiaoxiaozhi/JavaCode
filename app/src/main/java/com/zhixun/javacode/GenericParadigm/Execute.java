@@ -71,7 +71,7 @@ public class Execute {
         System.out.println(list);
     }
 
-    //6.2 类型通配符 接收更多类型
+    //6.2 类型通配符 接收更多集合类型
     static void showPair1(List<?> list) {
         System.out.println(list);
     }

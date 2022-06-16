@@ -16,7 +16,7 @@ public class ThreadPool {
         // 使用完的线程会被重新利用，如果没有新的线程将会创建一个新的,如果线程驻留60S不被使用将被注销，
         cacheTest(Executors.newCachedThreadPool());
         System.out.println("-----fixedThreadPool-----");
-        // 线程池内只有3个线程，谁先干完活谁接受下一个任务，线程编号一直是1、2 、3不再创建新的线程。等价于对第一种线程池做的限制
+        // 线程池内只有3个线程，谁先干完活谁接受下一个任务，线程编号一直是1、2 、3不再创建新的线程JobService。等价于对第一种线程池做的限制
         fixedTest(Executors.newFixedThreadPool(3));
 
         System.out.println("-----ScheduledThreadPool-----");

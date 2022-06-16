@@ -85,11 +85,11 @@ public class MyBuffer {
         //compat() 其主要作用在于在读取模式下进行数据压缩，并且方便下一步继续写入数据。例如：10个字节，先读取3个字节 此时position =3；
         //这时候写入会从3开始，覆盖掉未读取的字节，这时候执行compat，缓冲区数组整体向左前移3个字节，position = 7；
         buffer1.get(new byte[3]);//读取3个字节position=3
-        System.out.println("compact()-----" + buffer1.compact() + " hashcode = " + buffer1.hashCode());
+        System.out.println("compact()-----" + buffer1.compact() + " hashcode = " + buffer1.hashCode());//[compact详解](https://vimsky.com/examples/usage/bytebuffer-compact-method-in-java-with-examples.html)
         //clear() position = 0;limit = capacity;mark = -1;  有点初始化的味道，但是并不影响底层byte数组的内容, 注意看hashCode，buffer每执行一次实例都不相同
         System.out.println("clear()-----" + buffer1.clear() + " buffer1.get() = " + buffer1.get(1) + " hashcode = " + buffer1.hashCode());
-        //get()和get(1);
-        System.out.println("get()-----" + buffer1.get() + " get(0) = " + buffer1.get(0) + " hashcode = " + buffer1.hashCode());
+        //get()读取一个字节，position位置+1，get(int);读取指定位置值，position不变 这样的函数还有 getInt()读取四个字节 position+4， getInt(int)读取指定位置四个字节，position不变......等等
+        System.out.println("get()-----" + buffer1.get() + " get(0) = " + buffer1.get(0) + " hashcode = " + buffer1.hashCode());//获取
         System.out.println("position(int)-----" + buffer1.position(0));//设置position的位置
         System.out.println("buffer.put(new byte[0])-----" + buffer1.put(new byte[0]) + " 添加 0字节数组position不偏移");//添加 new byte[0] 效果
     }

@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,8 +47,9 @@ public class Io {
 
     public static void main(String... args) {
 //        inout();
-//        operatePath();
-        operateFile();
+//        operatePath();// Paths Android8.0开始支持使用设备有限
+//        operateFile();
+        WriterTest();
 //        show(Paths.get("121759.mp4"));
     }
 
@@ -106,15 +108,23 @@ public class Io {
      * @throws FileNotFoundException
      * @throws UnsupportedEncodingException
      */
-    private static void WriterTest() throws FileNotFoundException, UnsupportedEncodingException {
+    private static void WriterTest() {
         //1.字节输入流转字符输入流( 与Scanner相比 reader 能添加缓存机制，效率更高)
         Reader reader = new InputStreamReader(System.in, StandardCharsets.UTF_8);//带字符编码的字节输入流转换成 字符流读入
         new BufferedReader(reader);
-        //2.字节输出流转文本输出流
-        PrintWriter printWriter = new PrintWriter("123.txt", String.valueOf(StandardCharsets.UTF_8));
-        //等同于
-        new BufferedWriter(new OutputStreamWriter(new FileOutputStream("123.txt"), StandardCharsets.UTF_8));
-        printWriter.print("123");
+        try {
+            //2.字节输出流转文本输出流
+            PrintWriter printWriter = new PrintWriter("123.txt", String.valueOf(StandardCharsets.UTF_8));
+            System.out.println("StandardCharsets.UTF_8 = " + String.valueOf(StandardCharsets.UTF_8));
+            printWriter.print("123");
+            //等同于
+            new BufferedWriter(new OutputStreamWriter(new FileOutputStream("123.txt"), StandardCharsets.UTF_8));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -151,7 +161,7 @@ public class Io {
         String absolutle = System.getProperty("user.dir");//java 项目绝对路径
         Path workPath = Paths.get(absolutle);
         System.out.println("生成一个路径 = " + workPath);
-        workPath.resolve("any");//如果 any是绝对路径 则返回 any代表的绝对路径，否则在workPath后面跟着any
+        System.out.println(workPath.resolve("any"));//如果传入的路径和workPath一样 则返回 workPath，否则在workPath后面跟着any
         System.out.println("产生兄弟路径resolveSibling = " + workPath.resolveSibling("any"));
         workPath.normalize();//移除冗余路径例如 /home/../at/.q  到 /home/at/q
         System.out.println("返回根路径getRoot = " + workPath.getRoot());

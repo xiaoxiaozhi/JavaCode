@@ -22,8 +22,8 @@ public class ArrayAlg<E> {
     }
 
 
-    //5. 类型限制 <T extends 类1 & 类2>
-    public <T extends Comparable> T min(T... a) {
+    //5. 类型约束 <T extends 类1 & 类2>
+    public <T extends Comparable > T min(T... a) {
         if (a == null || a.length < 0) {
             return null;
         }
