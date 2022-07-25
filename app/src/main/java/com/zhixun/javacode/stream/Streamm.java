@@ -48,7 +48,7 @@ public class Streamm {
         // 函数式接口 lambda表达式可以隐式的实例一个函数式接口。
         GreetingService gs = msg -> System.out.println(msg);
         gs.sayMessage("");
-        GreetingService1 ggs = Sst::new;// 构造函数的参数和函数接口的参数一致，函数接口返回是构造方法的实例。也就是说函数接口的参数和返回和构造方法的参数和返回一致。构造方法返回该类的实例
+        GreetingService1 ggs = Sst::new;// 函数接口没有返回，只要求函数接口和构造方法参数一致即可。接口函数有返回，不仅要求函数接口和构造方法参数一直，还要求接口返回类型和构造方法产生的类型一致
         List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
         System.out.println("打印所有数字");
         eval(list, n -> true);// 打印所有 数字
@@ -75,7 +75,7 @@ public class Streamm {
         String[] stringArray = {"Barbara", "James", "Mary", "John", "Patricia", "Robert", "Michael", "Linda"};
         Arrays.sort(stringArray, String::compareToIgnoreCase);
         // 构造方法引用
-        MathOperation mo = String::new;// 构造函数的参数和函数接口的参数一致，函数接口返回是构造方法的实例。也就是说函数接口的参数和返回和构造方法的参数和返回一致。构造方法返回该类的实例
+        MathOperation mo = String::new;//函数接口没有返回，只要求函数接口和构造方法参数一致即可。接口函数有返回，不仅要求函数接口和构造方法参数一直，还要求接口返回类型和构造方法产生的类型一致
         // Stream 。 返回一个数据流后面通过collection方法形成一个列表。
         List<String> strings = Arrays.asList("始bc", "bc", "bc", "efg", "", "1", "jkl完");
         strings.stream();// 从集合框架产生流
