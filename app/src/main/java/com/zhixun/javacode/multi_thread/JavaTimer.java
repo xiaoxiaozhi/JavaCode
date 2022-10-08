@@ -20,7 +20,7 @@ import java.util.TimerTask;
  * @author zhixun
  *
  */
-public class Timerr {
+public class JavaTimer {
 
 	public static void main(String[] args) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -1,14 +1,25 @@
 package com.zhixun.javacode.multi_thread;
 
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * CompletableFuture https://zhuanlan.zhihu.com/p/63734729
- * 线程池
+ * new Thread的弊端如下：
+ * a. 每次new Thread新建对象性能差。
+ * b. 线程缺乏统一管理，可能无限制新建线程，相互之间竞争，及可能占用过多系统资源导致死机或oom,缺乏更多功能，如定时执行、定期执行、线程中断。
+ * 相比new Thread，Java提供的四种线程池的好处在于：
+ * a. 重用存在的线程，减少对象创建、消亡的开销，性能佳。
+ * b. 可有效控制最大并发线程数，提高系统资源的使用率，同时避免过多资源竞争，避免堵塞。
+ * c. 提供定时执行、定期执行、单线程、并发数控制等功能。
+ * 自定义线程池ThreadPool，以上四种线程池都是java对他的定制
  */
 public class ThreadPool {
     public static void main(String[] arg) {
@@ -28,13 +39,6 @@ public class ThreadPool {
         Executors.newSingleThreadScheduledExecutor();
 
         submit();
-    }
-
-    /**
-     * 线程池 执行 Runnable 和 Callable
-     */
-    public static void submit() {
-//        Executors.newSingleThreadExecutor().su()
     }
 
     public static void cacheTest(ExecutorService executorService) {
@@ -114,5 +118,114 @@ public class ThreadPool {
 
     }
 
+    /**
+     * Callable 和 Runable的区别
+     * executorService.submit执行Callable和Runable的时候。Callable<>利用泛型返回特定类型
+     */
+    public static void submit() {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        // executorService.submit 执行的不管事callable还是Runable 。run或者call方法总是立即执行，
+        // 但是future.get 比较奇怪，所执行执行时间等于 run或者call的时间，同时这两个方法不会再执行一次。future.get到底做了什么呢
+        // executorService.submit 和 executorService.execute区别 前者配合Callable获取返回值且只能有这一种配合。
+        long beginTime = System.currentTimeMillis();
+        Future<String> future = executorService.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                // executorService.submit zhihou
+                Thread.sleep(1000);
+                System.out.println("get" + Thread.currentThread().getName());
+                return "get" + Thread.currentThread().getName();
+            }
+        });
+//        // Runnable 和callable的代码都在子线程中执行，future.get在主线程中个执行
+//        // 执行线程
+        Future<String> s = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                long endTime = System.currentTimeMillis();
+                try {
+                    System.out.println("执行一编");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("子线程耗时" + (endTime - beginTime) + " Millisecond!");
+            }
+        }, "这是给future的");
+        try {
+            String ss = s.get();
+            // 打印结果
+            long endTime = System.currentTimeMillis();
+            System.out.println("是主线程吗" + Thread.currentThread().getName());
+            System.out.println(ss + (endTime - beginTime) + " Millisecond!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+//
+//        List<Future<String>> resultList = new ArrayList<Future<String>>();
+//
+//        // 创建10个任务并执行
+//        for (int i = 0; i < 10; i++) {
+//            // 使用ExecutorService执行Callable类型的任务，并将结果保存在future变量中
+//            Future<String> future1 = executorService.submit(new TaskWithResult(i));
+//            // 将任务执行结果存储到List中
+//            resultList.add(future1);
+//        }
 
+        // 遍历任务的结果
+        // for (Future<String> fs : resultList) {
+        // try {
+        // System.out.println(fs.get()); // 打印各个线程（任务）执行的结果
+        // } catch (InterruptedException e) {
+        // e.printStackTrace();
+        // } catch (ExecutionException e) {
+        // //发生异常fs.get() 这个循环理发停止执行，如果上面10个循环线程还没有执行完，未执行的线程也全部停止
+        // executorService.shutdownNow();
+        // e.printStackTrace();
+        // break;
+        // }
+        // }
+        // MyAsyncTask myAsyncTask = new MyAsyncTask();//执行报错java项目里不可用Android类库
+        // myAsyncTask.execute("");//执行
+    }
+
+    public static void schedulTest(ScheduledExecutorService service) {
+        // 下面代码的意义 每隔 0~1000毫秒创建一个线程。
+        for (int i = 0; i < 10; i++) {
+            final int index = i;
+            try {
+                // System.out.println(Thread.currentThread().getName());
+                Thread.sleep(index * 100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // service.schedule()
+        }
+    }
+
+    static class TaskWithResult implements Callable<String> {
+        private int id;
+
+        public TaskWithResult(int id) {
+            this.id = id;
+        }
+
+        /**
+         * 任务的具体过程，一旦任务传给ExecutorService的submit方法，则该方法自动在一个线程上执行。
+         *
+         * @return
+         * @throws Exception
+         */
+        public String call() throws Exception {
+            System.out.println("call()方法被自动调用,干活！！！             " + Thread.currentThread().getName());
+            if (new Random().nextBoolean())
+                throw new ThreadOperation.TaskException("Meet error in task." + Thread.currentThread().getName());
+            // 一个模拟耗时的操作
+            // for (int i = 999999999; i > 0; i--)
+            ;
+            return "call()方法被自动调用，任务的结果是：" + id + "    " + Thread.currentThread().getName();
+        }
+    }
 }
