@@ -9,7 +9,7 @@ public class ArrayAlg<E> {
     //1. 定义泛型方法  修饰符 <泛型列表> 返回类型 方法名
     public <E> E getMiddle1(E... arg) {
         return arg[arg.length / 2];
-    }   //2. 泛型方法泛型独立于泛型类泛型（如果泛型类泛型标识是String，泛型方法可以使用Integer）
+    }   //2. 泛型方法泛型独立于泛型类泛型（如果泛型类泛型标识是String，泛型方法可以使用Integer）试着删除类后面的 <E>就会发现 除了该方法，其它有泛型的方法都报错
 
     //3. 泛型类的成员方法不能使静态方法
     public E getMiddle(E... arg) {
@@ -21,9 +21,8 @@ public class ArrayAlg<E> {
         return arg[arg.length / 2];
     }
 
-
     //5. 类型约束 <T extends 类1 & 类2>
-    public <T extends Comparable > T min(T... a) {
+    public <T extends Comparable> T min(T... a) {
         if (a == null || a.length < 0) {
             return null;
         }
