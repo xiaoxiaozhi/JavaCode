@@ -19,10 +19,9 @@ import java.nio.file.Paths;
  * 缓冲区有4个属性---------------------------------------------------
  * Capacity	容量，即可以容纳的最大数据量；在缓冲区创建时被设定并且不能改变
  * Limit	表示缓冲区的当前终点，不能对缓冲区超过极限的位置进行读写操作。且极限是可以修改的。例如position则指向了数组的初始位置，
- * 表示下一个可读取的数据的位置；这里当我们一个一个读取数据的时候，position就会依次往下切换，当与limit重合时，
- * 就表示当前ByteBuffer中已没有可读取的数据了
- * Position	位置，下一个要被读或写的元素的索引，每次读写缓冲区数据时都会改变改值，为下次读写作准备
- * Mark	标记，调用mark()来设置mark=position，再调用reset()可以让position恢复到标记的位置
+ * Position	位置，表示下一个可读取的数据的位置；这里当我们一个一个读取数据的时候，position就会依次往下切换，当与limit重合时，就表示当前ByteBuffer中已没有可读取的数据了
+ * Mark	    标记，调用mark()来设置mark=position，再调用reset()可以让position恢复到标记的位置
+ * TODO 怎么判断ByteBuffer处于读模式还是写模式？？？重复调用flip()会导致 position=0,limit=0 ，所以要在flip之前判断是否已经处于读模式，可是怎么判断呢？？？
  */
 public class MyBuffer {
     public static void main(String[] arg) {
@@ -44,7 +43,7 @@ public class MyBuffer {
         // 或者需要经常重用时，才使用这种缓冲区
         ByteBuffer directBuffer = ByteBuffer.allocateDirect(102400 << 3);
         System.out.println("directBuffer = " + directBuffer);
-        System.out.println("after direct alocate:" + Runtime.getRuntime().freeMemory());
+//        System.out.println("after  alocate:" + Runtime.getRuntime().freeMemory());
         byte[] bytes = new byte[32];
         //这个缓冲区的数据会存放在byte数组中，bytes数组或buff缓冲区任何一方中数据的改动都会影响另一方。
         //其实ByteBuffer底层本来就有一个bytes数组负责来保存buffer缓冲区中的数据，通过allocate方法系统会帮你构造一个byte数组
@@ -65,6 +64,7 @@ public class MyBuffer {
         buffer.put((byte) 2);
         buffer.put((byte) 3);
         System.out.println("buffer-----" + buffer);
+        System.out.println("remaining()-----" + buffer.remaining());//写模式查看还有多少可用的空间，读模式查看ByteBuffer的大小,这时候和limit效果一致
         //读取limit
         System.out.println("limit()-----" + buffer.limit());
         //设置limit
@@ -75,6 +75,7 @@ public class MyBuffer {
         System.out.println("reset()-----" + buffer.reset());
         //rewind()方法，使缓冲区 position = 0，mark重置为-1,相比reset
         System.out.println("rewind()-----" + buffer.rewind());//写之前 执行这个方法，buffer.clear()//读之前执行这个方法
+        System.out.println("array-----" + buffer.array()[1]);//返回实现此缓冲区的 byte 数组,调用此方法之前要调用 hasArray 方法，以确保此缓冲区具有可访问的底层实现数组。
 
         ByteBuffer buffer1 = ByteBuffer.allocate(10);
         for (int i = 0; i < 10; i++) {

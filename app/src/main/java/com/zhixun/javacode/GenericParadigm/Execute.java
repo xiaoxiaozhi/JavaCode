@@ -36,12 +36,14 @@ import java.util.stream.Collectors;
  * 5. 约束与局限性
  * 由于类型擦除的缘故，不管Parent<String>还是Parent<LocalDate> 编译后都是Parent(原始类型) 所以想用isInstance 关键字判断对象p是Parent<String>还是Parent<LocalDate>子类没有意义
  * 泛型不支持基本类型所有没有Pair<double>,只有 Pair<Double>,其原因是类型擦除。擦除之后，Pair类含有Object类型的域,而Object不能存储double值
+ * 在泛型类中不能 new一个泛型标识符 例如 new T() 这样是不允许的
  * java不支持泛型类数组(代码在下面)  Parent<String>[] table = new Parent<String>[10] 这样做会失败 ，java数组支持协变但是极不推荐
  * java不支持泛型类协变 ArrayList<Fruit> 水果 = new ArrayList<Banana>() 这样做会报错，java不支持协变,当然也不支持逆变,
  * 用通配符?限定类型 <? extends 类名>以此让java支持协变。但是这样的协变只能读get不能写add. 可以add(null) 这是特例
  * 用通配符?限定类型<? super 类名>以此让java支持逆变。这样的逆变能写，但是get到的都是object类型，虽然逆变能让泛型类接收父类型的泛型类，但是添加(add)父类型仍然会报错 代码在下面
- * 逆变和协变用途，举个例子 java集合方法 Collections.copy(List<? super T> dest, List<? extends T> src)  src源头只读不写，dest目的只写不读
+ * 逆变和协变用途，举个例子 java集合方法 Collections.copy(List<? super T> dest, List<? extends T> src)  src源头只读不写，dest目的只写不读.也就是说协变用在只读不写的地方，逆变用在只写不读的地方
  * 协变和逆变只针对泛型， 普通类是类型转换
+ * 无限定通配符 <?> Parent<?> 相当于 Parent<T extends object>  kotlin 也有无限定通配符 *  List<*> 相当于 List<out Any>
  * 6. 泛型接口 原则和泛型派生类一致
  * <p>
  * attention:类型与泛型的关系变型(variant)有三种变型关系：协变(covariant)、逆变(contravariant)、不变(invariant)
@@ -77,6 +79,7 @@ public class Execute {
         ArrayList<? super Banana> sdd = new ArrayList<Fruit>();//使用通配符限定类型<? super 类名>让泛型类支持逆变
 //        sdd.add(new Fruit());//虽然逆变能让泛型类接受 父类型的泛型类，但是添加父类型仍然会报错
         sdd.add(new Banana());//逆变只能添加指定泛型类以及子类 该例是Banana
+        sdd.get(0);//编译器不知道这个父类具体是什么类，只能返回 Object 对象
 
         //6. 泛型接口  原则和泛型派生类一致
     }
@@ -91,6 +94,10 @@ public class Execute {
 
         public T getValue() {
             return value;
+        }
+
+        public void setValue(T value) {
+            this.value = value;
         }
     }
 

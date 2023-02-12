@@ -40,6 +40,7 @@ import java.util.zip.ZipInputStream;
  * 1.前者可以以字节形式操作任意JAVA对象 后者 操作 Unicode 文本
  * 2.前者只继承了Closeable 接口后者 继承了 Closeable、Flushable、Readable、Appendable
  * 3.CharBuffer implement Readable,Appendable 拥有按顺序和随机读写访问的方法
+ * TODO show()展示了不同流的读取速度，写入速度还没有做对比， FileChannel有 append 续写模式吗？值得探究
  */
 public class Io {
 

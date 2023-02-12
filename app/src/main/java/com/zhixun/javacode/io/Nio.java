@@ -11,8 +11,8 @@ import java.nio.file.StandardOpenOption;
 
 public class Nio {
     public static void main(String[] arg) {
-//        memoryMap();
-        fileLock();
+        memoryMap();
+//        fileLock();
     }
 
     /**
@@ -24,7 +24,7 @@ public class Nio {
                   FileChannel fileChannel = FileChannel.open(path);) {
 
             //获取一个byteBuffer缓冲区，fileChannel.map
-            ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());//获取
+            ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());//获取 byteBuffer没有底层数组。执行array会报错。正确做法是创建一个数组通过byteBuffer.get(数组)
             //顺序读缓冲区,一次读一个字节数组的数组的速度比一次读一个字节快很多
             while (byteBuffer.hasRemaining()) {
                 byteBuffer.get();
